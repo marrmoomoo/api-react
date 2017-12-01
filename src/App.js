@@ -7,14 +7,24 @@ class App extends Component {
 
   constructor(props){
     super(props)
-    this.state = { products: []}
+    this.state = { products: [], items: []}
   }
 
   componentDidMount() {
-    const url = 'http://localhost:8000/products'
-    fetch(url)
-      .then(response => response.json())
-      .then(data => this.setState({ products: data }))
+    var requestProducts = fetch('http://localhost:8000/products').then(function(response){
+      return response.json()
+    })
+    var requestItems = fetch('http://localhost:8000/items').then(function(response){
+      return response.json()
+    })
+
+    Promise.all([requestProducts, requestItems]).then((values)=>{
+      const products = values[0]
+      const items = values[1]
+      this.setState({items: items, products: products})
+      console.log(this.state)
+    })
+
   }
 
 
@@ -22,7 +32,8 @@ class App extends Component {
   render() {
     return (
       <div>
-          <Products products={this.state.products} />
+          <Products products={this.state.products} items={this.state.items}/>
+
       </div>
 
     );
